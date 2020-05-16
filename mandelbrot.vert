@@ -7,7 +7,7 @@ varying vec2 start_point;
 varying vec2 end_point;
 
 void main() {
-  vec2 start = vec2(-2, -1);
+  vec2 start = vec2(-2.5, -1);
   vec2 end = vec2(1, 1);
   vec2 bounds = end - start;
   vec2 center = start + bounds / 2.0;

@@ -1,6 +1,6 @@
 let canvas = document.createElement("canvas");
-let width = canvas.width = 700;
-let height = canvas.height = 700;
+let width = canvas.width = window.innerWidth;
+let height = canvas.height = window.innerHeight;
 let gl = canvas.getContext("webgl");
 let program = gl.createProgram();
 
@@ -12,13 +12,6 @@ let settings = {
   zoom: 1,
   pan: { x: 0, y: 0 },
   threshold: 4,
-};
-
-let viewport = {
-  width: 3.5,
-  height: 2,
-  x: 0,
-  y: 0,
 };
 
 async function load() {
@@ -100,23 +93,24 @@ function render() {
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
 
+function handleWheelEvent(event) {
+  if (event.ctrlKey) {
+    settings.zoom -= event.deltaY / 10 * settings.zoom;
+    settings.zoom = Math.max(0.1, settings.zoom);
+  } else {
+    settings.pan.x += event.deltaX / settings.zoom / 100;
+    settings.pan.y -= event.deltaY / settings.zoom / 100;
+  }
+
+  event.preventDefault();
+  render();
+}
+
 async function start() {
   await load();
   init();
   render();
-
-  window.addEventListener("wheel", event => {
-    if (event.ctrlKey) {
-      settings.pan.x += event.deltaX / settings.zoom / 100;
-      settings.pan.y -= event.deltaY / settings.zoom / 100;
-    } else {
-      settings.zoom -= event.deltaY / 10 * settings.zoom;
-      settings.zoom = Math.max(1, settings.zoom);
-    }
-
-    event.preventDefault();
-    render();
-  }, { passive: false });
+  window.addEventListener("wheel", handleWheelEvent, { passive: false });
 }
 
 start().catch(console.error);
